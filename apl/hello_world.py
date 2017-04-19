@@ -1,6 +1,6 @@
 from test.data.models import RevolutionsModel
 
-from parser.parse import Parser
+from apl.parse import Parser
 
 
 def main():

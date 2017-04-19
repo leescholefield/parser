@@ -4,6 +4,7 @@ setup(name='Parser',
       version='1.0',
       description='Library for parsing a document.',
       author='Lee Scholefield',
-      url='https://github.com/leescholefield/parser',
-      packages=['parser'],
+      url='https://github.com/leescholefield/apl',
+
+      packages=['apl'],
       )

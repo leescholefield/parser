@@ -5,7 +5,7 @@ from urllib import request
 from attributes import Attribute, AttributeList
 from lxml import etree
 
-from parser.models import Result
+from apl.models import Result
 
 
 class Parser(ABC):
@@ -19,7 +19,7 @@ class Parser(ABC):
         if parser is not None:
             return parser.from_string(string, format)
 
-        # lookup the parser associated with the format
+        # lookup the apl associated with the format
         parser = cls._parsers[format]
         if parser:
             return parser.from_string(string, format)
