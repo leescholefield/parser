@@ -5,5 +5,5 @@ setup(name='Parser',
       description='Library for parsing a document.',
       author='Lee Scholefield',
       url='https://github.com/leescholefield/parser.git',
-      packages=['parser-base'],
+      packages=['parser'],
       )
