@@ -1,11 +1,11 @@
-from abc import ABC, abstractmethod
 import re
+from abc import ABC, abstractmethod
 from urllib import request
 
+from attributes import Attribute, AttributeList
 from lxml import etree
 
-from attributes import Attribute, AttributeList
-from models import Result
+from parser.models import Result
 
 
 class Parser(ABC):

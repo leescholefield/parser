@@ -1,9 +1,10 @@
-import unittest
 import io
+import unittest
 
 from attributes import Attribute, AttributeList
-from parse import Parser, XmlParser
-from .data.models import RevolutionsModel, RevolutionsEpisode
+
+from parser.parse import Parser, XmlParser
+from .data.models import RevolutionsEpisode
 
 
 class ParserTest(unittest.TestCase):

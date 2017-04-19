@@ -1,4 +1,4 @@
-from attributes import Attribute, AttributeList
+from parser.attributes import Attribute, AttributeList
 
 
 class RevolutionsEpisode:

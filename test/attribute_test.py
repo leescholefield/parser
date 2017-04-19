@@ -1,5 +1,6 @@
 import unittest
-from attributes import Attribute
+
+from parser.attributes import Attribute
 
 
 class AttributeTest(unittest.TestCase):
