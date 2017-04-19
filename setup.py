@@ -6,5 +6,5 @@ setup(name='Parser',
       author='Lee Scholefield',
       url='https://github.com/leescholefield/parser.git',
       packages=['parser'],
-      py_modules=['parse', 'attributes']
+      package_dir=['parser/parser']
       )
