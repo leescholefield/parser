@@ -15,14 +15,14 @@ class Result:
         """
         return self.item_dict.items()
 
-    def item(self, key):
+    def item(self, key, default=None):
         """
         Returns the value associated with the key from the item_dict. If not found it will return None.
         """
         try:
             return self.item_dict[key]
         except KeyError:
-            return None
+            return default
 
     def __getattr__(self, item):
         return self.item_dict[item]
