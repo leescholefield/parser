@@ -10,6 +10,7 @@ from apl.models import Result
 
 
 class Parser(ABC):
+    """ Abstract class for a Parser. """
 
     _parsers = {}
 
@@ -20,7 +21,7 @@ class Parser(ABC):
         if parser is not None:
             return parser.from_string(string, format)
 
-        # lookup the apl associated with the format
+        # lookup the Parser implementation associated with the format
         parser = cls._parsers[format]
         if parser:
             return parser.from_string(string, format)
@@ -29,6 +30,13 @@ class Parser(ABC):
 
     @classmethod
     def from_url(cls, url, format='xml', parser=None):
+        """
+        Uses urllib to make a Http request, and then converts the response body to an etree Element.
+
+        :param url: either a string url or a request.Request instance.
+        :param format: expected format of the response body. Defaults to xml.
+        :param parser: Parser implementation to use.
+        """
 
         result_body = request.urlopen(url).read()
 
@@ -125,7 +133,21 @@ class XmlParser(Parser):
     def parse_attribute(self, attribute, root=None, namespaces=None):
         """
         Parses an Attribute instance.
+
+        :param attribute: attributes.Attribute instance.
+        :param root: root node to search. If none, self.root will be used instead.
+        :param namespaces: dictionary containing xml namespaces.
+
+        :returns: the first none-null value found after performing the xpath search. It will sanitize the string,
+        and then attempt to convert it to the type found in attribute.expected_type (default is str). If no value is
+        by the xpath search it will return attribute.default_value.
+
+        :raises: ValueError if attribute is not an instance of Attribute, or if the found value cannot be converted
+        to the expected type.
         """
+        if not isinstance(attribute, Attribute):
+            raise ValueError(attribute, ' is not an instance of Attribute.')
+
         if root is None:
             root = self.root
         if namespaces is None:
@@ -144,7 +166,19 @@ class XmlParser(Parser):
     def parse_attribute_list(self, attribute, root_path, root=None, namespaces=None):
         """
         Parses an AttributeList instance.
+
+        :param attribute: AttributeList instance.
+        :param root_path: xpath location of each Element to be parser. This will perform an xpath search on the root
+        node and then pass each Element obtained to the parse() method as the root.
+        :param root: root node. If none it will use self.root.
+        :param namespaces: dictionary containing xml namespaces.
+
+        :returns result_list: list of Result objects returned by the parse() method. Or an empty list if none could be
+        found.
         """
+        if not isinstance(attribute, AttributeList):
+            return ValueError(attribute, ' is not an instance of AttributeList.')
+
         if root is None:
             root = self.root
         if namespaces is None:
@@ -178,6 +212,7 @@ class XmlParser(Parser):
 
 
 class HtmlParser(XmlParser):
+    """ Identical to XmlParser except the _convert_root_to_etree() method now passes an etree.HTMLParser instance. """
 
     @staticmethod
     def _convert_root_to_etree(root):
