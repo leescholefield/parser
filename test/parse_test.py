@@ -1,9 +1,8 @@
 import io
 import unittest
 
-from attributes import Attribute, AttributeList
-
-from parser.parse import Parser, XmlParser
+from apl.attributes import Attribute, AttributeList
+from apl.parse import Parser, XmlParser
 from .data.models import RevolutionsEpisode
 
 
