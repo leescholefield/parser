@@ -6,8 +6,6 @@ from .attributes import Attribute, AttributeList
 
 from lxml import etree
 
-from apl.models import Result
-
 
 class Parser(ABC):
     """ Abstract class for a Parser. """
@@ -16,10 +14,12 @@ class Parser(ABC):
 
     @classmethod
     @abstractmethod
-    def from_string(cls, string, format='xml', parser=None):
+    def from_string(cls, string, format='xml', parser=None, namespaces=None):
 
         if parser is not None:
             return parser.from_string(string, format)
+        if not isinstance(namespaces, dict) and namespaces is not None:
+            raise ValueError('If namespaces is provided it must be a dictionary.')
 
         # lookup the Parser implementation associated with the format
         parser = cls._parsers[format]
@@ -29,18 +29,19 @@ class Parser(ABC):
             raise ValueError(format, ' is not a recognized format.')
 
     @classmethod
-    def from_url(cls, url, format='xml', parser=None):
+    def from_url(cls, url, format='xml', parser=None, namespaces=None):
         """
         Uses urllib to make a Http request, and then converts the response body to an etree Element.
 
         :param url: either a string url or a request.Request instance.
         :param format: expected format of the response body. Defaults to xml.
         :param parser: Parser implementation to use.
+        :param namespaces: xml namespace dict used by lxml.
         """
 
         result_body = request.urlopen(url).read()
 
-        return Parser.from_string(result_body, format, parser)
+        return Parser.from_string(result_body, format, parser, namespaces)
 
     @abstractmethod
     def parse(self, obj_or_dict, root=None, namespaces=None):
@@ -99,9 +100,9 @@ class Parser(ABC):
 class XmlParser(Parser):
 
     @classmethod
-    def from_string(cls, string, format='xml', parser=None):
+    def from_string(cls, string, format='xml', parser=None, namespaces=None):
         root = cls._convert_root_to_etree(string)
-        return cls(root)
+        return cls(root, namespaces)
 
     def __init__(self, root, namespaces=None):
         self.root = root
@@ -114,6 +115,8 @@ class XmlParser(Parser):
     def parse(self, obj_or_dict, root=None, namespaces=None):
         if root is None:
             root = self.root
+        if namespaces is None:
+            namespaces = self.namespaces
 
         result_obj = Result()
 
@@ -221,3 +224,33 @@ class HtmlParser(XmlParser):
 
 Parser._parsers['xml'] = XmlParser
 Parser._parsers['html'] = HtmlParser
+
+
+class Result:
+
+    def __init__(self):
+        self.item_dict = {}
+
+    def add_value(self, name, value):
+        """
+        Adds the given value to the item_dict.
+        """
+        self.item_dict[name] = value
+
+    def items(self):
+        """
+        Convenience method for looping over the item_dict.
+        """
+        return self.item_dict.items()
+
+    def item(self, key, default=None):
+        """
+        Returns the value associated with the key from the item_dict. If not found it will return None.
+        """
+        try:
+            return self.item_dict[key]
+        except KeyError:
+            return default
+
+    def __getattr__(self, item):
+        return self.item_dict[item]
