@@ -6,4 +6,7 @@ setup(name='Parser',
       author='Lee Scholefield',
       url='https://github.com/leescholefield/apl',
       packages=['apl'],
+      install_requires=[
+            'lxml',
+      ]
       )
