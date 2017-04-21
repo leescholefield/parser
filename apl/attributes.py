@@ -9,21 +9,26 @@ class Attribute(object):
     :param parse_method: optional method used to parse the value. Must take a single string.
     """
 
-    def __init__(self, *xpath_locations, name=None, default=None, expected_type=str, parse_method=None):
+    def __init__(self, xpath_locations, name=None, default=None, expected_type=str, parse_method=None):
 
-        self.locations = list(xpath_locations)
+        self._parse_method = None
+        self._locations = None
+
+        self.locations = xpath_locations
         self.name = name
         self.default_value = default
         self.expected_type = expected_type
-
-        self._parse_method = None
         self.parse_method = parse_method
 
-    def __str__(self):
-        if self.name:
-            return self.name
-        else:
-            return str(self.locations)
+    @property
+    def locations(self):
+        return self._locations
+
+    @locations.setter
+    def locations(self, loc):
+        if not isinstance(loc, list):
+            raise ValueError('locations must be a list.')
+        self._locations = loc
 
     @property
     def parse_method(self):
@@ -33,8 +38,13 @@ class Attribute(object):
     def parse_method(self, method):
         if not callable(method) and method is not None:
             raise ValueError(method, ' is not callable.')
-
         self._parse_method = method
+
+    def __str__(self):
+        if self.name:
+            return self.name
+        else:
+            return str(self.locations)
 
 
 class AttributeList(Attribute):
@@ -46,7 +56,7 @@ class AttributeList(Attribute):
     """
 
     def __init__(self, root_location, model, name=None, default=None, expected_type=str, parse_method=None):
-        super(AttributeList, self).__init__(name=name, default=default,
+        super(AttributeList, self).__init__(xpath_locations=[], name=name, default=default,
                                             expected_type=expected_type, parse_method=parse_method)
 
         self.model = model
