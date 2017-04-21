@@ -8,7 +8,7 @@ from lxml import etree
 
 
 class Parser(ABC):
-    """ Abstract class for a Parser. """
+    """ Base class for a Parser implementation. """
 
     _parsers = {}
 
@@ -24,7 +24,7 @@ class Parser(ABC):
         # lookup the Parser implementation associated with the format
         parser = cls._parsers[format]
         if parser:
-            return parser.from_string(string, format)
+            return parser.from_string(string, format, namespaces=namespaces)
         else:
             raise ValueError(format, ' is not a recognized format.')
 
@@ -72,7 +72,7 @@ class Parser(ABC):
     @staticmethod
     def _get_attribute_dict(obj_or_dict):
         """
-        Looks in an objects __dict__ and creates a new dictionary containing all of the attributes.Attribute instances.
+        Looks in an object's __dict__ and creates a new dictionary containing all of the attributes.Attribute instances.
         """
         if isinstance(obj_or_dict, dict):
             dict_ = obj_or_dict
@@ -113,6 +113,19 @@ class XmlParser(Parser):
         return etree.fromstring(root)
 
     def parse(self, obj_or_dict, root=None, namespaces=None):
+        """
+        Parses the attributes stored obj_or_dict.
+
+        :param obj_or_dict:
+        :param root: lxml root node to search.
+        :param namespaces: xml namespace dictionary.
+        :return: Result instance.
+
+        :raises ValueError: Raises ValueError if namespaces is not an instance of dictionary.
+        """
+        if not isinstance(namespaces, dict):
+            raise ValueError('namespaces must be a dictionary.')
+
         if root is None:
             root = self.root
         if namespaces is None:
@@ -150,6 +163,8 @@ class XmlParser(Parser):
         """
         if not isinstance(attribute, Attribute):
             raise ValueError(attribute, ' is not an instance of Attribute.')
+        if not isinstance(namespaces, dict):
+            raise ValueError('namespaces must be a dictionary.')
 
         if root is None:
             root = self.root
@@ -181,6 +196,8 @@ class XmlParser(Parser):
         """
         if not isinstance(attribute, AttributeList):
             return ValueError(attribute, ' is not an instance of AttributeList.')
+        if not isinstance(namespaces, dict):
+            raise ValueError('namespaces must be a dictionary.')
 
         if root is None:
             root = self.root
@@ -227,6 +244,7 @@ Parser._parsers['html'] = HtmlParser
 
 
 class Result:
+    """ Object returned by the Parser. """
 
     def __init__(self):
         self.item_dict = {}
