@@ -123,7 +123,7 @@ class XmlParser(Parser):
 
         :raises ValueError: Raises ValueError if namespaces is not an instance of dictionary.
         """
-        if not isinstance(namespaces, dict):
+        if not isinstance(namespaces, dict) and namespaces is not None:
             raise ValueError('namespaces must be a dictionary.')
 
         if root is None:
@@ -140,7 +140,7 @@ class XmlParser(Parser):
             else:
                 attr = self.parse_attribute(val, root, namespaces)
 
-            # add attr to the result object
+            # add attr to the result objecti
             if attr:
                 result_obj.add_value(name, attr)
 
