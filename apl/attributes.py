@@ -36,6 +36,7 @@ class Attribute(object):
 
     @parse_method.setter
     def parse_method(self, method):
+        """ Must either be a callable or None. """
         if not callable(method) and method is not None:
             raise ValueError(method, ' is not callable.')
         self._parse_method = method
